@@ -11,7 +11,7 @@ use Sub::Exporter -setup => {
     exports => [ 'fixup_object' ],
 };
 
-sub fixup_object {
+sub fixup_object($) {
     my $obj = shift;
     my $new = Data::Visitor::Callback->new(
 	object => sub {
