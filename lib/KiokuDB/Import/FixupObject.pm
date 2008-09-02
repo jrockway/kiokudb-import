@@ -25,11 +25,19 @@ sub fixup_object($) {
                 $v->_register_mapping( $obj => $instance );
 
                 my $args = { $v->visit(%$obj) };
+                # map (attribute => value) pairs to (init_arg => value) for new
+                $args = +{
+                    map {
+                        $meta->get_attribute($_)->init_arg => $args->{$_}
+                    }
+                    grep {
+                        $meta->get_attribute($_)->has_init_arg
+                    }
+                    keys %$args
+                };
 
                 my $new = $meta->new_object(%$args, __INSTANCE__ => $instance);
-
                 $new->BUILDALL($args) if $new->can("BUILDALL");
-
                 return $new;
             }
 

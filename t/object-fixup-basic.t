@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 17;
+use Test::More tests => 19;
 
 use Data::Structure::Util qw(has_circular_ref);
 use Scalar::Util qw(refaddr weaken);
@@ -38,14 +38,18 @@ is refaddr($fixed_non_moose_obj), refaddr($fixed_non_moose_obj->{self}),
 	package A::Moose::Class;
 	use Moose;
 
-	has string => ( is => 'ro', isa => 'Str', required => 1);
-	has other  => ( is => 'ro', isa => 'A::Nonmoose::Class');
-        has self   => ( is => 'ro', isa => 'A::Moose::Class', weak_ref => 1);
+	has string => ( is => 'ro', isa => 'Str', required => 1 );
+	has _      => ( is => 'ro', isa => 'Str', required => 1, init_arg => 'foo' );
+        has ignore => ( is => 'ro', isa => 'Str', default => 'ok', init_arg => undef );
+	has other  => ( is => 'ro', isa => 'A::Nonmoose::Class' );
+        has self   => ( is => 'ro', isa => 'A::Moose::Class', weak_ref => 1 );
         has moose  => ( is => 'ro', isa => 'Str', required => 1, default => 'hi' );
 }
 
 my $moose_obj = bless {
     string => 'test',
+    _      => 'bar',
+    ignore => 'XXX FAIL XXX',
     other  => A::Nonmoose::Class->new( { name => 'Yuval' } ),
 } => 'A::Moose::Class';
 
@@ -64,7 +68,9 @@ isa_ok $fixed_moose_obj->self, 'A::Moose::Class';
 
 is $fixed_moose_obj->string, 'test';
 is $fixed_moose_obj->other->name, 'Yuval';
+is $fixed_moose_obj->_, 'bar', 'init_arg value works';
 is $fixed_moose_obj->moose, 'hi', '"default" worked';
+is $fixed_moose_obj->ignore, 'ok', 'non-init-arg value ignored';
 is refaddr($fixed_moose_obj), refaddr($fixed_moose_obj->{self}),
   'circular ref preserved';
 ok !has_circular_ref($fixed_moose_obj), 'no ref cycles';
