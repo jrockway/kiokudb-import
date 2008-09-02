@@ -4,7 +4,7 @@ use warnings;
 use Carp qw(confess);
 use Scalar::Util qw(reftype);
 use Data::Visitor::Callback;
-use Data::Structure::Util qw(circular_off);
+#use Data::Structure::Util qw(circular_off);
 use Class::MOP;
 
 use Sub::Exporter -setup => {

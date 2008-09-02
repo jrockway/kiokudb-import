@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 17;
 
+use Data::Structure::Util qw(has_circular_ref);
 use Scalar::Util qw(refaddr weaken);
 use YAML;
 
@@ -49,7 +50,9 @@ my $moose_obj = bless {
 } => 'A::Moose::Class';
 
 $moose_obj->{self} = $moose_obj;
+ok has_circular_ref($moose_obj);
 weaken( $moose_obj->{self} );
+ok !has_circular_ref($moose_obj), 'weakened ok';
 
 isnt $moose_obj->{moose}, 'hi';
 
@@ -64,3 +67,4 @@ is $fixed_moose_obj->other->name, 'Yuval';
 is $fixed_moose_obj->moose, 'hi', '"default" worked';
 is refaddr($fixed_moose_obj), refaddr($fixed_moose_obj->{self}),
   'circular ref preserved';
+ok !has_circular_ref($fixed_moose_obj), 'no ref cycles';
