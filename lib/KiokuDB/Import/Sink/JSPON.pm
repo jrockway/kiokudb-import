@@ -14,15 +14,10 @@ has 'storage' => (
     coerce   => 1,
 );
 
-has '+connection' => (
-    default => sub {
-        my $self = shift;
-        return KiokuDB->new(
-            backend => KiokuDB::Backend::JSPON->new(
-                dir => $self->storage,
-            ),
-        );
-    },
-);
+sub _build_backend {
+	KiokuDB::Backend::JSPON->new(
+		dir => $self->storage,
+	),
+}
 
 1;
