@@ -31,26 +31,25 @@ is refaddr($fixed_non_moose_obj), refaddr($fixed_non_moose_obj->{self}),
   'circular ref preserved';
 
 {
-	package A::Nonmoose::Class; # not to be confused with an anonymous class!
-	use base qw(Class::Accessor);
+  package A::Nonmoose::Class; # not to be confused with an anonymous class!
+  use base qw(Class::Accessor);
 
-	__PACKAGE__->mk_accessors(qw(name));
+  __PACKAGE__->mk_accessors(qw(name));
 
-	package A::Moose::Class;
-	use Moose;
+  package A::Moose::Class;
+  use Moose;
 
-	has string => ( is => 'ro', isa => 'Str', required => 1 );
-	has _      => ( is => 'ro', isa => 'Str', required => 1, init_arg => 'foo' );
-        has ignore => ( is => 'ro', isa => 'Str', default => 'ok', init_arg => undef );
-	has other  => ( is => 'ro', isa => 'A::Nonmoose::Class' );
-        has self   => ( is => 'ro', isa => 'A::Moose::Class', weak_ref => 1 );
-        has moose  => ( is => 'ro', isa => 'Str', required => 1, default => 'hi' );
+  has string => ( is => 'ro', isa => 'Str', required => 1 );
+  has _      => ( is => 'ro', isa => 'Str', required => 1, init_arg => 'foo' );
+  has ignore => ( is => 'ro', isa => 'Str', default => 'ok', init_arg => undef );
+  has other  => ( is => 'ro', isa => 'A::Nonmoose::Class' );
+  has self   => ( is => 'ro', isa => 'A::Moose::Class', weak_ref => 1 );
+  has moose  => ( is => 'ro', isa => 'Str', required => 1, default => 'hi' );
 }
 
 my $moose_obj = bless {
     string => 'test',
     _      => 'bar',
-    ignore => 'XXX FAIL XXX',
     other  => A::Nonmoose::Class->new( { name => 'Yuval' } ),
 } => 'A::Moose::Class';
 

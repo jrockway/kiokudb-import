@@ -1,7 +1,7 @@
 package KiokuDB::Import::FixupObject;
 use strict;
 use warnings;
-use Carp qw(confess);
+use Carp qw(confess croak);
 use Scalar::Util qw(reftype);
 use Data::Visitor::Callback;
 #use Data::Structure::Util qw(circular_off);
@@ -14,7 +14,7 @@ use Sub::Exporter -setup => {
 sub fixup_object($) {
     my $obj = shift;
     my $new = Data::Visitor::Callback->new(
-	object => sub {
+        object => sub {
             my ( $v, $obj ) = @_;
 
             my $class = ref $obj;
@@ -24,17 +24,22 @@ sub fixup_object($) {
                 my $instance = $meta->get_meta_instance->create_instance;
                 $v->_register_mapping( $obj => $instance );
 
-                my $args = { $v->visit(%$obj) };
+                my $v = { $v->visit(%$obj) };
                 # map (attribute => value) pairs to (init_arg => value) for new
-                $args = +{
-                    map {
-                        $meta->get_attribute($_)->init_arg => $args->{$_}
-                    }
-                    grep {
-                        $meta->get_attribute($_)->has_init_arg
-                    }
-                    keys %$args
-                };
+
+                my @attrs;
+
+                foreach my $name ( keys %$v ) {
+                    my $attr = $meta->get_attribute($name)
+                        or croak "$class does not have the attribute '$name'";
+
+                    croak "Attr '$name' of class $class does not have an init arg"
+                    unless $attr->has_init_arg;
+
+                    push @attrs, $attr;
+                }
+
+                my $args = +{ map { $_->init_arg => $v->{$_->name} } @attrs };
 
                 my $new = $meta->new_object(%$args, __INSTANCE__ => $instance);
                 $new->BUILDALL($args) if $new->can("BUILDALL");
