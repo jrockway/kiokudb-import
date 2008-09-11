@@ -6,12 +6,16 @@ use namespace::clean -except => ['meta'];
 with 'MooseX::Traits', 'MooseX::LogDispatch';
 has '+_trait_namespace' => ( default => __PACKAGE__ );
 
+sub BUILD {
+    my $self = shift;
+    confess 'You need to consume a trait that "does" KiokuDB::Import::Sink'
+      unless $self->does('KiokuDB::Import::Sink');
+}
+
 sub load {
     my ($self, $obj) = @_;
     return $self->store(fixup_object($obj));
 }
-
-sub store {}
 
 1;
 
