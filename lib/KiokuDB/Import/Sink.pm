@@ -1,6 +1,8 @@
 package KiokuDB::Import::Sink;
 use Moose::Role;
 
+use KiokuDB;
+
 has 'connection' => (
     is         => 'ro',
     isa        => 'KiokuDB',
