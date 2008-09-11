@@ -9,9 +9,16 @@ has 'connection' => (
     lazy_build => 1,
 );
 
+has kiokudb_options => (
+	isa => "HashRef",
+	is  => "ro",
+	default => sub { +{} },
+);
+
 sub _build_connection {
 	my $self = shift;
 	return KiokuDB->new(
+		%{ $self->kiokudb_options },
 		backend => $self->backend,
 	);
 }
