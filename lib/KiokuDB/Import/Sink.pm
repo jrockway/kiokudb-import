@@ -31,10 +31,10 @@ has backend => (
 
 requires "_build_backend";
 
-sub store {
-    my ($self, $object) = @_;
-    my $uid = $self->connection->store($object);
-    $self->logger->info("Stored object as '$uid'");
+sub insert {
+    my ($self, @objects) = @_;
+    my @uids = $self->connection->store(@objects);
+    $self->logger->info("Stored objects as [ @uids ]");
 };
 
 1;

@@ -1,15 +1,14 @@
 package KiokuDB::Import::Source::IDs;
 use Moose::Role;
 
-around load => sub {
+around insert => sub {
     my ($next, $self, $object) = @_;
     if( !blessed $object ) {
         delete $object->{_ignore};
         $self->connection->live_objects->insert(%$object);
-        $self->store(values %$object);
-    }
-    else {
-        $self->$next($object);
+        return $self->$next(values %$object);
+    } else {
+        return $self->$next($object);
     }
 };
 

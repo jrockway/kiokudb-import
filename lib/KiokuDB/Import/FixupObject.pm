@@ -18,7 +18,7 @@ sub fixup_object($) {
             my ( $v, $obj ) = @_;
 
             my $class = ref $obj;
-            _make_package_exist( ref $obj );
+            _make_package_exist( $class );
 
             if ( my $meta = Class::MOP::get_metaclass_by_name($class) ) {
                 my $instance = $meta->get_meta_instance->create_instance;

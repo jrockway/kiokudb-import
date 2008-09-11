@@ -13,8 +13,24 @@ sub BUILD {
 }
 
 sub load {
-    my ($self, $obj) = @_;
-    return $self->store(fixup_object($obj));
+    my ( $self, @obj ) = @_;
+
+    $self->insert( $self->fixup( $self->inflate(@obj) ) );
+}
+
+sub inflate {
+    my ( $self, @obj ) = @_;
+    return @obj;
+}
+
+sub fixup {
+    my ( $self, @obj ) = @_;
+    return map { fixup_object($_) } @obj;
+}
+
+sub insert {
+    my ( $self, $obj ) = @_;
+    $self->store($obj);
 }
 
 1;
