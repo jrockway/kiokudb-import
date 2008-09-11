@@ -4,24 +4,25 @@ use Test::More tests => 19;
 
 use Data::Structure::Util qw(has_circular_ref);
 use Scalar::Util qw(refaddr weaken);
-use YAML;
+use YAML::XS;
 
 use KiokuDB::Import::FixupObject qw(fixup_object);
 
 # convince Perl these classes are loaded
-{ package Foo; sub foo {}; package Bar; sub bar {} }
+{ package Some::Foo; sub foo {}; package Bar; sub bar {} }
 
 my $non_moose_obj = Load(<<YAML);
---- &1 !!perl/hash:Foo
+%TAG !f! !Some::
+--- &1 !f!Foo
 oh: "hai"
-bar: !!perl/hash:Bar
+bar: !Bar
   name: Hello
 self: *1
 YAML
 
 my $fixed_non_moose_obj = fixup_object $non_moose_obj;
-isa_ok $fixed_non_moose_obj, 'Foo';
-isa_ok $fixed_non_moose_obj->{self}, 'Foo';
+isa_ok $fixed_non_moose_obj, 'Some::Foo';
+isa_ok $fixed_non_moose_obj->{self}, 'Some::Foo';
 isa_ok $fixed_non_moose_obj->{bar}, 'Bar';
 is $fixed_non_moose_obj->{oh}, 'hai';
 is $fixed_non_moose_obj->{bar}{name}, 'Hello';

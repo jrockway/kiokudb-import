@@ -13,7 +13,6 @@ requires 'MooseX::Getopt';
 requires 'MooseX::Traits';
 requires 'MooseX::Types::Path::Class';
 requires 'Scalar::Util';
-requires 'YAML';
 requires 'YAML::XS';
 requires 'namespace::clean';
 build_requires 'Test::More';
