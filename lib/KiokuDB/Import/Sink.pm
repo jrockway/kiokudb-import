@@ -3,6 +3,8 @@ use Moose::Role;
 
 use KiokuDB;
 
+use namespace::clean -except => 'meta';
+
 has 'connection' => (
     is         => 'ro',
     isa        => 'KiokuDB',

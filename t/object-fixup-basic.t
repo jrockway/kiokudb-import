@@ -6,7 +6,16 @@ use Data::Structure::Util qw(has_circular_ref);
 use Scalar::Util qw(refaddr weaken);
 use YAML::XS;
 
-use KiokuDB::Import::FixupObject qw(fixup_object);
+{
+	package Fixer;
+	use Moose;
+
+	with qw(KiokuDB::Import::FixupObject);
+}
+
+sub fixup_object {
+	Fixer->new->fixup(@_);
+}
 
 # convince Perl these classes are loaded
 { package Some::Foo; sub foo {}; package Bar; sub bar {} }

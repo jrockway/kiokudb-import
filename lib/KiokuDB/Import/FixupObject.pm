@@ -1,19 +1,17 @@
 package KiokuDB::Import::FixupObject;
-use strict;
-use warnings;
+use Moose::Role;
+
 use Carp qw(confess croak);
 use Scalar::Util qw(reftype);
 use Data::Visitor::Callback;
-#use Data::Structure::Util qw(circular_off);
 use Class::MOP;
 
-use Sub::Exporter -setup => {
-    exports => [ 'fixup_object' ],
-};
+use namespace::clean -except => 'meta';
 
-sub fixup_object($) {
-    my $obj = shift;
-    my $new = Data::Visitor::Callback->new(
+sub fixup {
+	my ( $self, @objects ) = @_;
+
+    Data::Visitor::Callback->new(
         object => sub {
             my ( $v, $obj ) = @_;
 
@@ -43,14 +41,13 @@ sub fixup_object($) {
 
                 my $new = $meta->new_object(%$args, __INSTANCE__ => $instance);
                 $new->BUILDALL($args) if $new->can("BUILDALL");
+
                 return $new;
-            }
-
-            return $v->visit_ref($obj);
+            } else {
+				return $v->visit_ref($obj);
+			}
         },
-    )->visit($obj);
-
-    return $new;
+    )->visit(@objects);
 }
 
 sub _make_package_exist {

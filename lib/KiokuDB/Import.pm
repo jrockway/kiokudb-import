@@ -1,10 +1,13 @@
 package KiokuDB::Import;
 use Moose;
-use KiokuDB::Import::FixupObject qw(fixup_object);
 use namespace::clean -except => ['meta'];
+
+with qw(KiokuDB::Import::FixupObject);
 
 with 'MooseX::Traits', 'MooseX::LogDispatch';
 has '+_trait_namespace' => ( default => __PACKAGE__ );
+
+has '+use_logger_singleton' => ( default => 1 );
 
 sub BUILD {
     my $self = shift;
@@ -15,22 +18,14 @@ sub BUILD {
 sub load {
     my ( $self, @obj ) = @_;
 
+	my $s = $self->connection->new_scope;
+
     $self->insert( $self->fixup( $self->inflate(@obj) ) );
 }
 
 sub inflate {
     my ( $self, @obj ) = @_;
     return @obj;
-}
-
-sub fixup {
-    my ( $self, @obj ) = @_;
-    return map { fixup_object($_) } @obj;
-}
-
-sub insert {
-    my ( $self, $obj ) = @_;
-    $self->store($obj);
 }
 
 1;
