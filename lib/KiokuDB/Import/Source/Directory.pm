@@ -6,9 +6,15 @@ use File::Next;
 around inflate => sub {
     my ($next, $self, $root) = @_;
 
-    if ( !blessed($thingy) or $thingy->isa("Path::Class::Dir") ) {
+    if ( !blessed($root) or $root->isa("Path::Class::Dir") ) {
         $self->logger->info("Loading directory $root");
-        my $files = File::Next::files( $root );
+        my $files = File::Next::files( 
+            { 
+                file_filter    => sub { !/^\./ },
+                descend_filter => sub { !/^\./ },
+            },
+            $root 
+        );
 
         my @ret;
 

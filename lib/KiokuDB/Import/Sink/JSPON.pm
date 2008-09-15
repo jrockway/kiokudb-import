@@ -15,6 +15,7 @@ has 'storage' => (
 );
 
 sub _build_backend {
+    my $self = shift;
 	KiokuDB::Backend::JSPON->new(
 		dir => $self->storage,
 	),
