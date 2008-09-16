@@ -35,8 +35,14 @@ requires "_build_backend";
 
 sub insert {
     my ($self, @objects) = @_;
-    my @uids = $self->connection->store(@objects);
-    $self->logger->info("Stored objects as [ @uids ]");
+
+    eval {
+        my @uids = $self->connection->store(@objects);
+        $self->logger->info("Stored objects as [ @uids ]");
+    };
+    if(my $error = $@){
+        $self->logger->error("Error storing objects; $@");
+    }
 };
 
 1;

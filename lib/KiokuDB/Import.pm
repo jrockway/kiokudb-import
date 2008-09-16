@@ -7,7 +7,7 @@ with qw(KiokuDB::Import::FixupObject);
 with 'MooseX::Traits', 'MooseX::LogDispatch';
 has '+_trait_namespace' => ( default => __PACKAGE__ );
 
-has '+use_logger_singleton' => ( default => 1 );
+#has '+use_logger_singleton' => ( default => 1 );
 
 sub BUILD {
     my $self = shift;
@@ -17,10 +17,8 @@ sub BUILD {
 
 sub load {
     my ( $self, @obj ) = @_;
-
-	my $s = $self->connection->new_scope;
-
-    $self->insert( $self->fixup( $self->inflate(@obj) ) );
+    my $s = $self->connection->new_scope;
+    map { $self->insert( $self->fixup( $_ ) ) } $self->inflate(@obj);
 }
 
 sub inflate {
