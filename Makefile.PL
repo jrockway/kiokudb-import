@@ -12,6 +12,7 @@ requires 'Moose::Role';
 requires 'MooseX::Getopt';
 requires 'MooseX::Traits';
 requires 'MooseX::Types::Path::Class';
+requires 'MooseX::LogDispatch';
 requires 'Scalar::Util';
 requires 'YAML::XS';
 requires 'namespace::clean';
